@@ -17,7 +17,6 @@ Lit runs your applications in isolated environments using native Linux kernel fe
 - **♻️ Auto-Optimizing Containers (Optional)**  
   Enable runtime optimizations:
   - **Memory tuning** based on usage.
-  - **Dead code stripping** for interpreted languages (like Python/Node).
   - **Layer pruning & image slimming** in the background.
 
 - **🌐 Custom networking**  
