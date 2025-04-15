@@ -6,7 +6,7 @@ Lit runs your applications in isolated environments using native Linux kernel fe
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 - **🔧 Docker-like containerization without Docker**  
   Uses pure Linux kernel primitives (no Docker daemon, no containerd, no OCI dependency).
@@ -43,7 +43,7 @@ Lit creates containers by stitching together core Linux features:
 
 ---
 
-## 📄 Example: `lit.yml`
+## Example: `lit.yml`
 
 ```yaml
 name: myapp
@@ -71,7 +71,7 @@ optimize:
   shrink_image: true
 ```
 
-## ✅ Why Go is Ideal for a Container Runtime
+## Why Go is Ideal for a Container Runtime
 
 Go is purpose-built for systems like Slimbox — here’s why it’s a perfect match:
 
@@ -100,7 +100,7 @@ At runtime, Slimbox monitors container memory usage and automatically adjusts `c
 - Graceful resizing without needing container restarts
 
 
-### 📦 Image Slimming (`shrink_image`)
+### Image Slimming (`shrink_image`)
 Once the container is running, Lit starts a background slimming task:
 
 - Merges intermediate layers
@@ -111,7 +111,7 @@ All this happens **non-blockingly** — app starts immediately while slimming ha
 
 ---
 
-## 🧪 Use Cases
+## Use Cases
 
 Lit is ideal for:
 
@@ -122,7 +122,7 @@ Lit is ideal for:
 - 🔹 CI/CD pipelines that auto-tune containers for speed and size
 
 
-## 🛣 Roadmap
+## Roadmap
 
 Here’s what’s planned:
 
