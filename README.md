@@ -73,7 +73,7 @@ optimize:
 
 ## Why Go is Ideal for a Container Runtime
 
-Go is purpose-built for systems like Slimbox — here’s why it’s a perfect match:
+Go is purpose-built for systems like Lit — here’s why it’s a perfect match:
 
 | Reason               | Why It Matters                                                                 |
 |----------------------|--------------------------------------------------------------------------------|
@@ -93,7 +93,7 @@ Lit goes beyond traditional containers by offering **on-the-fly optimization** t
 Here’s how each optimization works:
 
 ### 🔍 Memory Tuning (`auto_memory_tune`)
-At runtime, Slimbox monitors container memory usage and automatically adjusts `cgroup` limits. It starts with a safe allocation and can scale limits up/down based on behavior, preventing out-of-memory crashes or unused reservations.
+At runtime, Lit monitors container memory usage and automatically adjusts `cgroup` limits. It starts with a safe allocation and can scale limits up/down based on behavior, preventing out-of-memory crashes or unused reservations.
 
 - Detects idle vs active memory patterns
 - Uses `memory.stat` and `memory.current` for profiling
