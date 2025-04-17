@@ -1,0 +1,38 @@
+# ===============================
+# LIT CONTAINER CONFIGURATION
+# ===============================
+
+# Namespace types to isolate for this container.
+# Supported types: "net", "pid", "mount"
+# These control process/network/filesystem isolation via Linux namespaces.
+# Example: isolate network and process IDs
+namespace_type: "net,pid,mount"
+
+# -------------------------------
+# RESOURCE LIMITS
+# -------------------------------
+
+# Maximum memory the container is allowed to use (in bytes).
+# Example: 104857600 = 100 MB
+memory_limit: 104857600
+
+# CPU limit in microseconds per 100,000us (100ms) period.
+# Example: 50000 = 50% CPU, 20000 = 20% CPU
+# Set to -1 for unlimited CPU
+cpu_limit: 50000
+
+# -------------------------------
+# CONTAINERIZED APPLICATION
+# -------------------------------
+
+# The name of the executable inside the container to run.
+# Your container root filesystem should contain this binary under: /bin/<image>
+#
+# Example:
+#   If this value is "myserver", then:
+#   → Place your binary at: base/bin/myserver
+#
+# Can be named anything (including "app", "nginx", "hello.exe", etc.)
+# Note: this must be a Linux-compatible statically compiled binary.
+image: "your_app"
+
