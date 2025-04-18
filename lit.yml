@@ -34,5 +34,5 @@ cpu_limit: 50000
 #
 # Can be named anything (including "app", "nginx", "hello.exe", etc.)
 # Note: this must be a Linux-compatible statically compiled binary.
-image: "your_app"
+image: "testApp"
 

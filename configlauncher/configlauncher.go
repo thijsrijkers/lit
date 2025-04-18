@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"io/ioutil"
+	"lit/namespacecgroup"
 )
 
 // Config struct for parsing lit.yml
