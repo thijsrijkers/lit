@@ -8,21 +8,21 @@ Lit runs your applications in isolated environments using native Linux kernel fe
 
 ## Key Features
 
-- **🔧 Docker-like containerization without Docker**  
+- ** Docker-like containerization without Docker**  
   Uses pure Linux kernel primitives (no Docker daemon, no containerd, no OCI dependency).
 
-- **📁 Single config file (lit.yml)**  
+- ** Single config file (lit.yml)**  
   Configure everything (filesystem, resources, env vars, networking) in one declarative file.
 
-- **♻️ Auto-Optimizing Containers (Optional)**  
+- ** Auto-Optimizing Containers (Optional)**  
   Enable runtime optimizations:
   - **Memory tuning** based on usage.
   - **Layer pruning & image slimming** in the background.
 
-- **🌐 Custom networking**  
+- ** Custom networking**  
   Built-in support for isolated networks, port forwarding, and service linking — no `docker-compose` needed.
 
-- **🔒 Rootless & secure by default**  
+- ** Rootless & secure by default**  
   Uses Linux user namespaces for rootless containers. Sandboxing options with seccomp + AppArmor/SELinux profiles.
 
 ---
@@ -77,22 +77,22 @@ Go is purpose-built for systems like Lit — here’s why it’s a perfect match
 
 | Reason               | Why It Matters                                                                 |
 |----------------------|--------------------------------------------------------------------------------|
-| 🧠 Low-level access   | Interact with Linux syscalls (`unshare`, `clone`, `mount`) via `syscall` or `golang.org/x/sys/unix`. |
-| ⚙️ Concurrency model | Goroutines make process lifecycles, I/O, and async optimization smooth.        |
-| 💼 Static binaries    | Compile to a single, dependency-free binary — portable and easy to distribute.|
-| 🌱 Fast build & deploy| Rapid iteration with tiny binaries. Great for fast dev loops and CI/CD.       |
-| 🛠 Mature ecosystem   | Rich libraries for YAML parsing, CLI, cgroups, netlink, and more.              |
-| 👥 Community support  | Most container tooling is in Go — easier to learn from and contribute to.     |
+| Low-level access   | Interact with Linux syscalls (`unshare`, `clone`, `mount`) via `syscall` or `golang.org/x/sys/unix`. |
+| Concurrency model | Goroutines make process lifecycles, I/O, and async optimization smooth.        |
+| Static binaries    | Compile to a single, dependency-free binary — portable and easy to distribute.|
+| Fast build & deploy| Rapid iteration with tiny binaries. Great for fast dev loops and CI/CD.       |
+| Mature ecosystem   | Rich libraries for YAML parsing, CLI, cgroups, netlink, and more.              |
+| Community support  | Most container tooling is in Go — easier to learn from and contribute to.     |
 
 ---
 
-## 🧠 Optimizer: Behind the Scenes
+## Optimizer: Behind the Scenes
 
 Lit goes beyond traditional containers by offering **on-the-fly optimization** to improve performance, reduce size, and clean up unnecessary overhead — optionally enabled via the config.
 
 Here’s how each optimization works:
 
-### 🔍 Memory Tuning (`auto_memory_tune`)
+### Memory Tuning (`auto_memory_tune`)
 At runtime, Lit monitors container memory usage and automatically adjusts `cgroup` limits. It starts with a safe allocation and can scale limits up/down based on behavior, preventing out-of-memory crashes or unused reservations.
 
 - Detects idle vs active memory patterns
