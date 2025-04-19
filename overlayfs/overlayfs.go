@@ -12,19 +12,31 @@ type OverlayFS struct {
 	MountPoint   string
 }
 
-func CreateOverlayFS(overlay OverlayFS) error {
-	// Check if the base and writable layers exist
-	if _, err := os.Stat(overlay.BaseLayer); os.IsNotExist(err) {
-		return fmt.Errorf("base layer does not exist: %v", err)
+func CreateOverlayFS(fs OverlayFS) error {
+	// Ensure the directories exist
+	if err := os.MkdirAll(fs.BaseLayer, 0755); err != nil {
+		return fmt.Errorf("failed to create base layer directory: %w", err)
 	}
-	if _, err := os.Stat(overlay.WritableLayer); os.IsNotExist(err) {
-		return fmt.Errorf("writable layer does not exist: %v", err)
+	if err := os.MkdirAll(fs.WritableLayer, 0755); err != nil {
+		return fmt.Errorf("failed to create writable layer directory: %w", err)
+	}
+	if err := os.MkdirAll(fs.MountPoint, 0755); err != nil {
+		return fmt.Errorf("failed to create mount point directory: %w", err)
 	}
 
-	// Prepare OverlayFS mount
-	err := syscall.Mount(overlay.BaseLayer, overlay.MountPoint, "overlay", syscall.MS_MGC_VAL, "lowerdir="+overlay.BaseLayer+",upperdir="+overlay.WritableLayer+",workdir="+overlay.MountPoint+"/work")
+	// Create the work directory inside the mount point
+	workDir := fs.MountPoint + "/work"
+	if err := os.MkdirAll(workDir, 0755); err != nil {
+		return fmt.Errorf("failed to create work directory: %w", err)
+	}
+
+	// Prepare the OverlayFS mount command
+	mountCmd := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s", fs.BaseLayer, fs.WritableLayer, workDir)
+
+	// Perform the mount
+	err := syscall.Mount("overlay", fs.MountPoint, "overlay", syscall.MS_MGC_VAL, mountCmd)
 	if err != nil {
-		return fmt.Errorf("failed to mount OverlayFS: %v", err)
+		return fmt.Errorf("failed to mount OverlayFS: %w", err)
 	}
 
 	return nil

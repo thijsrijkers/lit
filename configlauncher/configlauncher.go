@@ -3,7 +3,6 @@ package configlauncher
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
-	"os"
 	"io/ioutil"
 	"lit/namespacecgroup"
 )

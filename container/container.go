@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"lit/configlauncher"
 	"lit/overlayfs"
-	"lit/namespacecgroup"
 )
 
 type Container struct {
@@ -31,14 +30,17 @@ func (c *Container) Run() error {
 
 	// Step 3: Setup OverlayFS
 	fs := overlayfs.OverlayFS{
-		BaseLayer:     c.MountBase + "/base",
-		WritableLayer: c.MountBase + "/write",
-		MountPoint:    c.MountBase + "/mount",
+		BaseLayer:     c.MountBase + "/mnt/base",
+		WritableLayer: c.MountBase + "/mnt/write",
+		MountPoint:    c.MountBase + "/mnt/mount",
 	}
+
 	err = overlayfs.CreateOverlayFS(fs)
+
 	if err != nil {
 		return fmt.Errorf("overlayfs: %w", err)
 	}
+
 	defer func() {
 		if unmountErr := overlayfs.UnmountOverlayFS(fs.MountPoint); unmountErr != nil {
 			log.Printf("Warning: failed to unmount: %v", unmountErr)
@@ -62,4 +64,3 @@ func (c *Container) Run() error {
 	log.Println("Launching containerized app...")
 	return cmd.Run()
 }
-
