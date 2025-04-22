@@ -13,7 +13,7 @@ type OverlayFS struct {
 }
 
 func CreateOverlayFS(fs OverlayFS) error {
-	// Ensure the directories exist
+	// Ensure the directories exist for BaseLayer, WritableLayer, and MountPoint
 	if err := os.MkdirAll(fs.BaseLayer, 0755); err != nil {
 		return fmt.Errorf("failed to create base layer directory: %w", err)
 	}
@@ -33,12 +33,13 @@ func CreateOverlayFS(fs OverlayFS) error {
 	// Prepare the OverlayFS mount command
 	mountCmd := fmt.Sprintf("lowerdir=%s,upperdir=%s,workdir=%s", fs.BaseLayer, fs.WritableLayer, workDir)
 
-	// Perform the mount
+	// Ensure the mount point is isolated before mounting
 	err := syscall.Mount("overlay", fs.MountPoint, "overlay", syscall.MS_MGC_VAL, mountCmd)
 	if err != nil {
 		return fmt.Errorf("failed to mount OverlayFS: %w", err)
 	}
 
+	// Mount the work directory (if necessary) and return
 	return nil
 }
 

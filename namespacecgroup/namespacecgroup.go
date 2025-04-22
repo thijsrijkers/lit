@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"syscall"
+	"log"
 )
 
 // Namespace and Cgroup struct
@@ -23,6 +24,9 @@ func CreateNamespace() error {
 }
 
 func SetupCgroup(config RuntimeConfig) error {
+	// Ensure cgroups are mounted
+	mountCgroupSubsystems()
+
 	// Memory cgroup
 	memoryPath := "/sys/fs/cgroup/memory/lit_container"
 	if err := os.MkdirAll(memoryPath, 0755); err != nil {
@@ -43,7 +47,6 @@ func SetupCgroup(config RuntimeConfig) error {
 
 	// Assign current process (or another PID) to both cgroups
 	pid := fmt.Sprintf("%d", os.Getpid())
-
 	if err := os.WriteFile(memoryPath+"/cgroup.procs", []byte(pid), 0644); err != nil {
 		return fmt.Errorf("failed to assign process to memory cgroup: %v", err)
 	}
@@ -52,4 +55,21 @@ func SetupCgroup(config RuntimeConfig) error {
 	}
 
 	return nil
+}
+
+func mountCgroupSubsystems() {
+	// Check and mount the cgroup subsystems
+	mounts := []string{
+		"/sys/fs/cgroup/memory",
+		"/sys/fs/cgroup/cpu,cpuacct",
+	}
+
+	for _, path := range mounts {
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			// Mount the cgroup subsystem if it does not exist
+			if err := syscall.Mount("cgroup", path, "cgroup", 0, ""); err != nil {
+				log.Fatalf("failed to mount cgroup subsystem: %v", err)
+			}
+		}
+	}
 }
