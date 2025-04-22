@@ -1,8 +1,6 @@
 # Lit
 
-**Lit** is a container runtime that brings performance, simplicity, and transparency to modern app deployment — without relying on Docker or any external container engines.
-
-Lit runs your applications in isolated environments using native Linux kernel features like namespaces, cgroups, and union filesystems — just like Docker, but from scratch and in a fully customizable, minimal way.
+**Lit** runs your applications in isolated environments using native Linux kernel features like namespaces, cgroups, and union filesystems — just like Docker, but from scratch and in an minimal way.
 
 ---
 
@@ -13,11 +11,6 @@ Lit runs your applications in isolated environments using native Linux kernel fe
 
 - ** Single config file (lit.yml)**  
   Configure everything (filesystem, resources, env vars, networking) in one declarative file.
-
-- ** Auto-Optimizing Containers (Optional)**  
-  Enable runtime optimizations:
-  - **Memory tuning** based on usage.
-  - **Layer pruning & image slimming** in the background.
 
 - ** Custom networking**  
   Built-in support for isolated networks, port forwarding, and service linking — no `docker-compose` needed.
@@ -86,30 +79,6 @@ Go is purpose-built for systems like Lit — here’s why it’s a perfect match
 
 ---
 
-## Optimizer: Behind the Scenes
-
-Lit goes beyond traditional containers by offering **on-the-fly optimization** to improve performance, reduce size, and clean up unnecessary overhead — optionally enabled via the config.
-
-Here’s how each optimization works:
-
-### Memory Tuning (`auto_memory_tune`)
-At runtime, Lit monitors container memory usage and automatically adjusts `cgroup` limits. It starts with a safe allocation and can scale limits up/down based on behavior, preventing out-of-memory crashes or unused reservations.
-
-- Detects idle vs active memory patterns
-- Uses `memory.stat` and `memory.current` for profiling
-- Graceful resizing without needing container restarts
-
-
-### Image Slimming (`shrink_image`)
-Once the container is running, Lit starts a background slimming task:
-
-- Merges intermediate layers
-- Deletes cache files, package managers’ leftovers (e.g., `apt`, `npm`, `pip`)
-- Compresses the final filesystem layout
-
-All this happens **non-blockingly** — app starts immediately while slimming happens in parallel.
-
----
 
 ## Use Cases
 
@@ -119,19 +88,6 @@ Lit is ideal for:
 - 🔹 Teams who want **Docker-like workflows without Docker**
 - 🔹 Systems with limited resources (IoT, embedded, edge computing)
 - 🔹 Security-focused deployments with rootless containers
-- 🔹 CI/CD pipelines that auto-tune containers for speed and size
-
-
-## Roadmap
-
-Here’s what’s planned:
-
-- [ ] Namespace + cgroup-based runtime
-- [ ] Config-driven container launcher (`lit.yml`)
-- [ ] Layered filesystem with OverlayFS
-- [ ] Language-specific optimization modules
-- [ ] Dynamic resource tuning engine
-- [ ] Built-in network isolation and port mapping
 - [ ] Cross-platform support (Linux-first, BSD later)
 - [ ] Runtime plugin system for community features
 
