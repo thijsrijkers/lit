@@ -2,18 +2,19 @@ package namespacecgroup
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"syscall"
-	"log"
 )
 
-// Namespace and Cgroup struct
+// RuntimeConfig struct holds configuration options for namespaces and cgroups.
 type RuntimeConfig struct {
 	CgroupMemoryLimit int64
 	CgroupCPULimit    int64
 	NamespaceType     string
 }
 
+// CreateNamespace creates new namespaces (PID, Network, Mount).
 func CreateNamespace() error {
 	// Create a new namespace (PID, Network, Mount, etc.)
 	err := syscall.Unshare(syscall.CLONE_NEWNET | syscall.CLONE_NEWNS | syscall.CLONE_NEWPID)
@@ -23,9 +24,12 @@ func CreateNamespace() error {
 	return nil
 }
 
+// SetupCgroup sets up the memory and CPU cgroups based on the provided config.
 func SetupCgroup(config RuntimeConfig) error {
 	// Ensure cgroups are mounted
-	mountCgroupSubsystems()
+	if err := mountCgroupSubsystems(); err != nil {
+		return err
+	}
 
 	// Memory cgroup
 	memoryPath := "/sys/fs/cgroup/memory/lit_container"
@@ -57,8 +61,9 @@ func SetupCgroup(config RuntimeConfig) error {
 	return nil
 }
 
-func mountCgroupSubsystems() {
-	// Check and mount the cgroup subsystems
+// mountCgroupSubsystems checks if cgroup subsystems are mounted and mounts them if necessary.
+func mountCgroupSubsystems() error {
+	// Check if cgroup subsystems are mounted. If not, try mounting them.
 	mounts := []string{
 		"/sys/fs/cgroup/memory",
 		"/sys/fs/cgroup/cpu,cpuacct",
@@ -66,10 +71,15 @@ func mountCgroupSubsystems() {
 
 	for _, path := range mounts {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			// Mount the cgroup subsystem if it does not exist
+			// Attempt to mount the cgroup subsystem if it does not exist.
+			log.Printf("Cgroup path %s does not exist, attempting to mount it.", path)
 			if err := syscall.Mount("cgroup", path, "cgroup", 0, ""); err != nil {
-				log.Fatalf("failed to mount cgroup subsystem: %v", err)
+				return fmt.Errorf("failed to mount cgroup subsystem %v: %v", path, err)
 			}
+		} else {
+			log.Printf("Cgroup path %s already exists and is mounted.", path)
 		}
 	}
+
+	return nil
 }

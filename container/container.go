@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
+	"time"
 	"lit/configlauncher"
 	"lit/overlayfs"
 )
@@ -30,22 +31,57 @@ func (c *Container) Run() error {
 
 	// Step 3: Setup OverlayFS
 	fs := overlayfs.OverlayFS{
-		BaseLayer:     c.MountBase + "/mnt/base",
-		WritableLayer: c.MountBase + "/mnt/write",
-		MountPoint:    c.MountBase + "/mnt/mount",
+		BaseLayer:     "/mnt/base",
+		WritableLayer: "/mnt/write",
+		MountPoint:    "/mnt/mount",
+	}
+	
+
+	// Function to handle OverlayFS setup with cleanup and retries
+	setupOverlayFS := func() error {
+		// Cleanup any previous OverlayFS mounts if they exist
+		if _, err := os.Stat(fs.MountPoint); err == nil {
+			// Unmount previous OverlayFS if it's still mounted
+			if unmountErr := overlayfs.UnmountOverlayFS(fs.MountPoint); unmountErr != nil {
+				log.Printf("Warning: failed to unmount previous OverlayFS mount point at %s: %v", fs.MountPoint, unmountErr)
+			} else {
+				log.Printf("Successfully unmounted previous OverlayFS mount point at %s", fs.MountPoint)
+			}
+		}
+
+		// Retry the OverlayFS setup a few times if needed
+		for i := 0; i < 3; i++ {
+			err := overlayfs.CreateOverlayFS(fs)
+			if err == nil {
+				log.Println("Successfully mounted OverlayFS")
+				return nil
+			}
+
+			// Log the error and attempt again
+			log.Printf("Failed to mount OverlayFS (attempt %d): %v", i+1, err)
+			time.Sleep(2 * time.Second) // Sleep before retrying
+		}
+
+		// If all attempts fail, return an error
+		return fmt.Errorf("failed to mount OverlayFS after multiple attempts")
 	}
 
-	err = overlayfs.CreateOverlayFS(fs)
+	// Attempt to set up OverlayFS
+	err = setupOverlayFS()
 	if err != nil {
 		return fmt.Errorf("overlayfs setup: %w", err)
 	}
 
 	defer func() {
-		// Defer unmount with better error handling and logging.
-		if unmountErr := overlayfs.UnmountOverlayFS(fs.MountPoint); unmountErr != nil {
-			log.Printf("Warning: failed to unmount OverlayFS mount point at %s: %v", fs.MountPoint, unmountErr)
+		// Cleanup unmounting of OverlayFS when done
+		if _, err := os.Stat(fs.MountPoint); err == nil {
+			if unmountErr := overlayfs.UnmountOverlayFS(fs.MountPoint); unmountErr != nil {
+				log.Printf("Warning: failed to unmount OverlayFS mount point at %s: %v", fs.MountPoint, unmountErr)
+			} else {
+				log.Printf("Successfully unmounted OverlayFS mount point at %s", fs.MountPoint)
+			}
 		} else {
-			log.Printf("Successfully unmounted OverlayFS mount point at %s", fs.MountPoint)
+			log.Printf("Mount point %s does not exist, skipping unmount.", fs.MountPoint)
 		}
 	}()
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"syscall"
-	
+	"log"
 )
 
 type OverlayFS struct {
@@ -15,6 +15,10 @@ type OverlayFS struct {
 
 // CreateOverlayFS sets up the overlay filesystem
 func CreateOverlayFS(fs OverlayFS) error {
+
+	log.Printf("BaseLayer: %s", fs.BaseLayer)
+	log.Printf("WritableLayer: %s", fs.WritableLayer)
+	log.Printf("MountPoint: %s", fs.MountPoint)
 	// Ensure directories exist (create them if they don't)
 	if err := os.MkdirAll(fs.BaseLayer, 0755); err != nil {
 		return fmt.Errorf("failed to create base layer directory: %w", err)

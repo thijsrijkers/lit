@@ -6,7 +6,7 @@
 # Supported types: "net", "pid", "mount"
 # These control process/network/filesystem isolation via Linux namespaces.
 # Example: isolate network and process IDs
-namespace_type: "net,pid,mount"
+namespace_type: "pid,mount"
 
 # -------------------------------
 # RESOURCE LIMITS
