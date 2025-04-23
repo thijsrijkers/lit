@@ -39,29 +39,43 @@ Lit creates containers by stitching together core Linux features:
 ## Example: `lit.yml`
 
 ```yaml
-name: myapp
-entrypoint: python app.py
+# ===============================
+# LIT CONTAINER CONFIGURATION
+# ===============================
 
-filesystem:
-  base: ubuntu:22.04
-  copy:
-    - ./:/app
-  workdir: /app
+# Namespace types to isolate for this container.
+# Supported types: "net", "pid", "mount"
+# These control process/network/filesystem isolation via Linux namespaces.
+# Example: isolate network and process IDs
+namespace_type: "pid,mount"
 
-env:
-  - DEBUG=true
-  - PORT=8080
+# -------------------------------
+# RESOURCE LIMITS
+# -------------------------------
 
-resources:
-  cpu: "1"
-  memory: "512M"
+# Maximum memory the container is allowed to use (in bytes).
+# Example: 104857600 = 100 MB
+memory_limit: 104857600
 
-network:
-  expose: [8080]
+# CPU limit in microseconds per 100,000us (100ms) period.
+# Example: 50000 = 50% CPU, 20000 = 20% CPU
+# Set to -1 for unlimited CPU
+cpu_limit: 50000
 
-optimize:
-  auto_memory_tune: true
-  shrink_image: true
+# -------------------------------
+# CONTAINERIZED APPLICATION
+# -------------------------------
+
+# The name of the executable inside the container to run.
+# Your container root filesystem should contain this binary under: /bin/<image>
+#
+# Example:
+#   If this value is "myserver", then:
+#   → Place your binary at: base/bin/myserver
+#
+# Can be named anything (including "app", "nginx", "hello.exe", etc.)
+# Note: this must be a Linux-compatible statically compiled binary.
+image: "testApp"
 ```
 
 ## Why Go is Ideal for a Container Runtime
@@ -76,19 +90,5 @@ Go is purpose-built for systems like Lit — here’s why it’s a perfect match
 | Fast build & deploy| Rapid iteration with tiny binaries. Great for fast dev loops and CI/CD.       |
 | Mature ecosystem   | Rich libraries for YAML parsing, CLI, cgroups, netlink, and more.              |
 | Community support  | Most container tooling is in Go — easier to learn from and contribute to.     |
-
----
-
-
-## Use Cases
-
-Lit is ideal for:
-
-- 🔹 Developers building **minimalist, high-performance containers**
-- 🔹 Teams who want **Docker-like workflows without Docker**
-- 🔹 Systems with limited resources (IoT, embedded, edge computing)
-- 🔹 Security-focused deployments with rootless containers
-- [ ] Cross-platform support (Linux-first, BSD later)
-- [ ] Runtime plugin system for community features
 
 ---
